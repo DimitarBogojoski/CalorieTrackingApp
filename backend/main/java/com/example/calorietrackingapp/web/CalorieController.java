@@ -10,6 +10,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin
 public class CalorieController {
     private final CaloryService caloryService;
 
@@ -23,7 +24,7 @@ public class CalorieController {
         response.put("dailyLimit", caloryService.getOrCreateTodayLimit().getCalorieLimit());
         response.put("consumed",caloryService.getConsumedCalories());
         response.put("remaining",caloryService.getRemainingCalories());
-        response.put("food",caloryService.getTodayFoods());
+        response.put("foods",caloryService.getTodayFoods());
         return response;
     }
 
@@ -34,7 +35,7 @@ public class CalorieController {
     }
 
     @PostMapping("/food-entry")
-    public Map<String,Object> saveFoodEntry(@Valid @RequestParam FoodEntry foodEntry){
+    public Map<String,Object> saveFoodEntry(@Valid @RequestBody FoodEntry foodEntry){
         caloryService.saveFoodEntry(foodEntry);
         return Map.of("message","Food entry saved");
     }
