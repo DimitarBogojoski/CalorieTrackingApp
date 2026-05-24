@@ -1,12 +1,13 @@
 package com.example.calorietrackingapp.web;
 
-import com.example.calorietrackingapp.model.FoodEntry;
+import com.example.calorietrackingapp.dto.request.CalculatorRequest;
+import com.example.calorietrackingapp.dto.request.FoodEntryRequest;
+import com.example.calorietrackingapp.dto.response.ApiMessageResponse;
+import com.example.calorietrackingapp.dto.response.CalculatorResponse;
+import com.example.calorietrackingapp.dto.response.DashboardResponse;
 import com.example.calorietrackingapp.service.CaloryService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -19,24 +20,23 @@ public class CalorieController {
     }
 
     @GetMapping("/dashboard")
-    public Map<String,Object> getDashboard(){
-        Map<String,Object> response=new HashMap<>();
-        response.put("dailyLimit", caloryService.getOrCreateTodayLimit().getCalorieLimit());
-        response.put("consumed",caloryService.getConsumedCalories());
-        response.put("remaining",caloryService.getRemainingCalories());
-        response.put("foods",caloryService.getTodayFoods());
-        return response;
+    public DashboardResponse getDashboard(){
+        return caloryService.getDashboard();
     }
 
-    @PostMapping("/daily-limit")
-    public Map<String,Object> saveDailyLimit(@RequestParam Integer calorieLimit){
-        caloryService.saveDailyLimit(calorieLimit);
-        return Map.of("message","Daily limit saved");
+    @PostMapping("/calculator")
+    public CalculatorResponse calculate(@Valid @RequestBody CalculatorRequest request){
+        return caloryService.calculateCalories(request);
     }
 
     @PostMapping("/food-entry")
-    public Map<String,Object> saveFoodEntry(@Valid @RequestBody FoodEntry foodEntry){
-        caloryService.saveFoodEntry(foodEntry);
-        return Map.of("message","Food entry saved");
+    public ApiMessageResponse saveFoodEntry(@Valid @RequestBody FoodEntryRequest request) {
+        caloryService.saveFoodEntry(request);
+        return new ApiMessageResponse("Food entry saved");
+    }
+
+    @PutMapping("/reset-cal")
+    public DashboardResponse reset(){
+        return caloryService.resetAll();
     }
 }
